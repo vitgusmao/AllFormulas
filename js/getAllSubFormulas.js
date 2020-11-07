@@ -1,40 +1,70 @@
 const operators = ['~', '^', 'v', '-', '<', '>'];
 
-funcao = formula => {
-	var parentesesAberto = false;
-	var parentesesExtrasAbertos = 0;
-	var inicio = 0;
-	var fim = 0;
+removeWhiteSpaces = formula => {
+	return formula.filter(element => element != " ");
+};
 
-	formula.forEach((elemento, index) => {
-		if (!parentesesAberto) {
+hasMoreThanTenUniqueSymbols = formula => {
+	var symbols = [];
+	var setOfSymbols;
+
+	formula.forEach(element => {
+		if (!operators.includes(element) && !(element == "(" || element == ")")) {
+			symbols.push(element);
+		}
+	});
+	
+	setOfSymbols = new Set(symbols);
+
+	if (setOfSymbols.size <= 10) {
+		return true;
+	} else {
+		return false;
+	}
+};
+
+preProcessFormula = formula => {
+	var processedFormula = formula.split("");
+	processedFormula = removeWhiteSpaces(processedFormula);
+
+	return processedFormula;
+};
+
+getSubFormulas = formula => {
+	var parenthesesIsOpen = false;
+	var extraParentheses = 0;
+	var parenthesesStart = 0;
+	var parenthesesEnd = 0;
+
+	formula.forEach((element, index) => {
+		if (!parenthesesIsOpen) {
 			
-			if (!operators.includes(elemento)) {
-				if (elemento == "(") {
-					parentesesAberto = true;
-					inicio = index+1;
+			if (!operators.includes(element)) {
+				if (element == "(") {
+					parenthesesIsOpen = true;
+					parenthesesStart = index+1;
 				}
-				else if (!(elemento == ")")) {
-					console.log("subformula: ", elemento);
+				else if (!(element == ")")) {
+					console.log("subformula: ", element);
 				}
-			} else console.log("operador: ", elemento);
+			}
 
 		} else {
-			if (elemento == "(") {
-				parentesesExtrasAbertos += 1;
+			if (element == "(") {
+				extraParentheses += 1;
 			}
-			else if (elemento == ")") {
-				if (parentesesExtrasAbertos > 0) {
-					parentesesExtrasAbertos -= 1;
+			else if (element == ")") {
+				if (extraParentheses > 0) {
+					extraParentheses -= 1;
 				} else {
-					fim = index
-					funcao(formula.slice(inicio, fim));
+					parenthesesEnd = index
+					getSubFormulas(formula.slice(parenthesesStart, parenthesesEnd));
 				}
 			}
 		} 
 
 	});
-	console.log("subformula: ", formula)
+	console.log("subformula: ", formula.join(""))
 }
 
-module.exports = funcao;
+module.exports = getSubFormulas;
