@@ -46,7 +46,7 @@ getSubFormulas = formula => {
 					parenthesesStart = index+1;
 				}
 				else if (!(element == ")")) {
-					console.log("subformula: ", element);
+					subFormulas.add(element);
 				}
 			}
 
