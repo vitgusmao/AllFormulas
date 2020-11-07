@@ -60,6 +60,7 @@ getSubFormulas = formula => {
 				} else {
 					parenthesesEnd = index
 					getSubFormulas(formula.slice(parenthesesStart, parenthesesEnd));
+					parenthesesIsOpen = false;
 				}
 			}
 		} 
