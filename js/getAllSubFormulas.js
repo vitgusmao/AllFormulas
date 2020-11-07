@@ -1,4 +1,5 @@
 const operators = ['~', '^', 'v', '-', '<', '>'];
+var subFormulas = new Set();
 
 removeWhiteSpaces = formula => {
 	return formula.filter(element => element != " ");
@@ -64,7 +65,11 @@ getSubFormulas = formula => {
 		} 
 
 	});
-	console.log("subformula: ", formula.join(""))
+	subFormulas.add(formula.join(""));
 }
 
-module.exports = getSubFormulas;
+module.exports = formula => {
+	let processedFormula = preProcessFormula(formula);
+	getSubFormulas(processedFormula);
+	return [...subFormulas];
+};
