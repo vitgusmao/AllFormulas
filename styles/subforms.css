@@ -38,6 +38,10 @@ h3 {
     margin-bottom: 5px !important;
 }
 
+#input_alert {
+    width: 50%;
+}
+
 #dropAjuda {
     font-size:11px;
     max-width:50%;

@@ -7,15 +7,16 @@ const init = input => {
 		const vectorizedForm = vectorizeForm(input);
 		let processedFormula = removeWhiteSpaces(vectorizedForm);
 		if (hasMoreThanTenUniqueSymbols(processedFormula)) {
-			alert('Digite uma fórmula com 10 ou menos variaveis');
+			createAlert('Digite uma fórmula com 10 ou menos variaveis');
 		} else {
+			removeAlert()
 			for (subForm of getSubForms(processedFormula)) {
 				document.getElementById('resultado_formula').innerHTML += '<p class="balao_resultado w3-animate-opacity">'+subForm+'</p>';
 			}
 		}
 	}
 	else {
-		alert('Digite uma fórmula!');
+		createAlert('Digite uma fórmula!');
 	}
 };
 
@@ -85,4 +86,14 @@ const getSubForms = form => {
 const clean = () => {
 	document.getElementById('resultado_formula').innerHTML = '';
 	document.getElementById('input_formula').value = '';
+	removeAlert()
+};
+
+const removeAlert = () => {
+	$('#input_alert').remove();
+}
+
+const createAlert = message => {
+	const div = $('<div id="input_alert" class="alert alert-danger" role="alert"></div>div').text(message);
+	$('#input_div').append(div);
 };
