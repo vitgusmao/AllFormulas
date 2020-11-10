@@ -52,7 +52,6 @@ const getSubForms = form => {
 		const element = form[index]
 
 		if (!parenthesesIsOpen) {
-			
 			if (!operators.includes(element)) {
 				if (element == "(") {
 					parenthesesIsOpen = true;
@@ -62,7 +61,6 @@ const getSubForms = form => {
 					subForms.push(element);
 				}
 			}
-
 		} else {
 			if (element == "(") {
 				extraParentheses += 1;
@@ -72,7 +70,7 @@ const getSubForms = form => {
 					extraParentheses -= 1;
 				} else {
 					parenthesesEnd = index
-					getSubForms(form.slice(parenthesesStart, parenthesesEnd));
+					subForms = subForms.concat(getSubForms(form.slice(parenthesesStart, parenthesesEnd)));
 					parenthesesIsOpen = false;
 				}
 			}
