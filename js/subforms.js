@@ -1,23 +1,22 @@
 const operators = ['~', '^', 'v', '-', '<', '>'];
 
 const init = input => {
-	if(input != '') {
-		document.getElementById('resultado_formula').innerHTML = '';
-
-		const vectorizedForm = vectorizeForm(input);
-		let processedFormula = removeWhiteSpaces(vectorizedForm);
-		if (hasMoreThanTenUniqueSymbols(processedFormula)) {
-			createAlert('Digite uma fórmula com 10 ou menos variaveis');
-		} else {
-			removeAlert()
-			for (subForm of getSubForms(processedFormula)) {
-				document.getElementById('resultado_formula').innerHTML += '<p class="balao_resultado w3-animate-opacity">'+subForm+'</p>';
-			}
-		}
-	}
-	else {
-		createAlert('Digite uma fórmula!');
-	}
+    document.getElementById('resultado_formula').innerHTML = '';
+    removeAlert();
+	
+    if(input != '') {
+        const vectorizedForm = vectorizeForm(input);
+        let processedFormula = removeWhiteSpaces(vectorizedForm);
+        if (hasMoreThanTenUniqueSymbols(processedFormula)) {
+            createAlert('Digite uma fórmula com 10 ou menos variaveis');
+        } else {
+            for (subForm of getSubForms(processedFormula)) {
+                document.getElementById('resultado_formula').innerHTML += '<p class="balao_resultado w3-animate-opacity">'+subForm+'</p>';
+            }
+        }
+    } else {
+	createAlert('Digite uma fórmula!');
+    }
 };
 
 const vectorizeForm = formula => {
