@@ -76,8 +76,11 @@ const validateFormula = formula => {
 
 const isInValidElementSequence = (element, nextElement) => {
 	const sequenceRule = {
+		'<': ['-'],
+		'-': ['>'],
+		'>': ['variabel', '('],
 		'op': ['variabel', '('],
-		'variabel': ['op', ')'],
+		'variabel': ['op', ')', '-', '<'],
 		'(': ['variabel', '('],
 		')': ['op', ')'],
 	}
@@ -102,14 +105,9 @@ const isInValidElementSequence = (element, nextElement) => {
 }
 
 const getElementType = (element) => {
-	const verifyFunctions = [isVariabel, isOperation, isOpenParentheses, isCloseParentheses]
+	const verifyFunctions = [isVariabel, isSimpleOperation, isLessThan, isGreaterThan, isMinus, isOpenParentheses, isCloseParentheses]
 	
-	const typesPerFunction = {
-		0: 'variabel',
-		1: 'op',
-		2: '(',
-		3: ')',
-	}
+	const typesPerFunction = ['variabel', 'op', '<', '>', '-', '(', ')']
 
 	let elementType = ''
 	verifyFunctionslength = verifyFunctions.length
@@ -128,7 +126,13 @@ const isCloseParentheses = element => element === ')'
 
 const isVariabel = element => /[A-Z]/.test(element)
 
-const isOperation = element =>  /[~\^v\-<>]/.test(element)
+const isSimpleOperation = element =>  /[~\^v]/.test(element)
+
+const isLessThan = element =>  /</.test(element)
+
+const isGreaterThan = element =>  />/.test(element)
+
+const isMinus = element =>  /\-/.test(element)
 
 const hasMoreThanTenUniqueSymbols = formula => {
 	let symbols = [];
