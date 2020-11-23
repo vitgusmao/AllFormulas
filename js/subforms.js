@@ -54,15 +54,17 @@ const validateFormula = formula => {
 		}
 
 		const nextElement = formula[index + 1]
-		if (nextElement) {
-			let isInvalidSequence
-			[isInvalidSequence, message] = isInValidElementSequence(element, nextElement)
-			if (isInvalidSequence) {
+		let isInvalidSequence
+		[isInvalidSequence, message] = isInValidElementSequence(element, nextElement)
+		if (isInvalidSequence) {
+			if (nextElement) {
 				message = message || `Caracter "${nextElement}" é invalido na posição ${index + 2}`
-				isValidFormula = false
-				parenthesesController = 0
-				break
+			} else {
+				message = message || `Caracter "${element}" é invalido na posição ${index + 1}`
 			}
+			isValidFormula = false
+			parenthesesController = 0
+			break
 		}
 	}
 
@@ -80,9 +82,9 @@ const isInValidElementSequence = (element, nextElement) => {
 		'-': ['>'],
 		'>': ['variabel', '('],
 		'op': ['variabel', '('],
-		'variabel': ['op', ')', '-', '<'],
+		'variabel': ['op', ')', '-', '<', 'final'],
 		'(': ['variabel', '('],
-		')': ['op', ')'],
+		')': ['op', ')', '-', '<', 'final'],
 	}
 
 	let message =  ''
@@ -105,9 +107,9 @@ const isInValidElementSequence = (element, nextElement) => {
 }
 
 const getElementType = (element) => {
-	const verifyFunctions = [isVariabel, isSimpleOperation, isLessThan, isGreaterThan, isMinus, isOpenParentheses, isCloseParentheses]
+	const verifyFunctions = [isVariabel, isSimpleOperation, isLessThan, isGreaterThan, isMinus, isOpenParentheses, isCloseParentheses, isFinal]
 	
-	const typesPerFunction = ['variabel', 'op', '<', '>', '-', '(', ')']
+	const typesPerFunction = ['variabel', 'op', '<', '>', '-', '(', ')', 'final']
 
 	let elementType = ''
 	verifyFunctionslength = verifyFunctions.length
@@ -133,6 +135,8 @@ const isLessThan = element =>  /</.test(element)
 const isGreaterThan = element =>  />/.test(element)
 
 const isMinus = element =>  /\-/.test(element)
+
+const isFinal = element => typeof(element) === 'undefined'
 
 const hasMoreThanTenUniqueSymbols = formula => {
 	let symbols = [];
