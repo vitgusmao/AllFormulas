@@ -54,15 +54,17 @@ const validateFormula = formula => {
 		}
 
 		const nextElement = formula[index + 1]
-		if (nextElement) {
-			let isInvalidSequence
-			[isInvalidSequence, message] = isInValidElementSequence(element, nextElement)
-			if (isInvalidSequence) {
+		let isInvalidSequence
+		[isInvalidSequence, message] = isInValidElementSequence(element, nextElement)
+		if (isInvalidSequence) {
+			if (nextElement) {
 				message = message || `Caracter "${nextElement}" é invalido na posição ${index + 2}`
-				isValidFormula = false
-				parenthesesController = 0
-				break
+			} else {
+				message = message || `Caracter "${element}" é invalido na posição ${index + 1}`
 			}
+			isValidFormula = false
+			parenthesesController = 0
+			break
 		}
 	}
 
@@ -78,11 +80,12 @@ const isInValidElementSequence = (element, nextElement) => {
 	const sequenceRule = {
 		'<': ['-'],
 		'-': ['>'],
-		'>': ['variabel', '('],
-		'op': ['variabel', '('],
-		'variabel': ['op', ')', '-', '<'],
-		'(': ['variabel', '('],
-		')': ['op', ')'],
+		'>': ['variabel', '(', '~'],
+		'op': ['variabel', '(', '~'],
+		'variabel': ['op', ')', '-', '<', 'final'],
+		'(': ['variabel', '(', '~'],
+		')': ['op', ')', '-', '<', 'final'],
+		'~': ['variabel', '('],
 	}
 
 	let message =  ''
@@ -105,9 +108,9 @@ const isInValidElementSequence = (element, nextElement) => {
 }
 
 const getElementType = (element) => {
-	const verifyFunctions = [isVariabel, isSimpleOperation, isLessThan, isGreaterThan, isMinus, isOpenParentheses, isCloseParentheses]
+	const verifyFunctions = [isVariabel, isSimpleOperation, isLessThan, isGreaterThan, isMinus, isOpenParentheses, isCloseParentheses, isFinal, isNotOperation]
 	
-	const typesPerFunction = ['variabel', 'op', '<', '>', '-', '(', ')']
+	const typesPerFunction = ['variabel', 'op', '<', '>', '-', '(', ')', 'final', '~']
 
 	let elementType = ''
 	verifyFunctionslength = verifyFunctions.length
@@ -126,13 +129,17 @@ const isCloseParentheses = element => element === ')'
 
 const isVariabel = element => /[A-Z]/.test(element)
 
-const isSimpleOperation = element =>  /[~\^v]/.test(element)
+const isSimpleOperation = element =>  /[\^v]/.test(element)
 
 const isLessThan = element =>  /</.test(element)
 
 const isGreaterThan = element =>  />/.test(element)
 
 const isMinus = element =>  /\-/.test(element)
+
+const isFinal = element => typeof(element) === 'undefined'
+
+const isNotOperation = element =>  /~/.test(element)
 
 const hasMoreThanTenUniqueSymbols = formula => {
 	let symbols = [];
@@ -153,7 +160,7 @@ const getSubForms = form => {
 	let extraParentheses = 0;
 	let parenthesesStart = 0;
 	let parenthesesEnd = 0;
-	let subForms = []
+	let subForms = new Set()
 
 	const formLenght = form.length
 	for (let index = 0; index < formLenght; index ++) {
@@ -166,7 +173,7 @@ const getSubForms = form => {
 					parenthesesStart = index+1;
 				}
 				else if (!(element == ")")) {
-					subForms.push(element);
+					subForms.add(element);
 				}
 			}
 		} else {
@@ -181,7 +188,7 @@ const getSubForms = form => {
 					if (parenthesesStart == 1 && parenthesesEnd == formLenght - 1) {
 						dontHasUnnecesserParentheses = false
 					}
-					subForms = subForms.concat(getSubForms(form.slice(parenthesesStart, parenthesesEnd)));
+					subForms = new Set([...subForms, ...getSubForms(form.slice(parenthesesStart, parenthesesEnd))]);
 					parenthesesIsOpen = false;
 				}
 			}
@@ -189,7 +196,7 @@ const getSubForms = form => {
 	}
 
 	if (dontHasUnnecesserParentheses) {
-		subForms.push(form.join(""));
+		subForms.add(form.join(""));
 	}
 
 	return [...subForms];
